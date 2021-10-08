@@ -100,4 +100,7 @@ first.example.test.	3600	IN	A	192.168.1.1
 ## TODO
 
 * [x] support wildcard record
+* [x] support new type (like caa)
 
+## why fork ? 
+for new todos :))
