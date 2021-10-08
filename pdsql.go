@@ -88,9 +88,11 @@ func (pdb PowerDNSGenericSQLBackend) ServeDNS(ctx context.Context, w dns.Respons
 			case *dns.TXT:
 				rr.Hdr = hrd
 				rr.Txt = []string{v.Content}
-		        case *dns.CAA:
+			case *dns.CAA:
 				rr.Hdr = hrd
-				rr.CAA = []string{v.Content}
+				if !ParseCAA(rr, v.Content) {
+					rr = nil
+				}
 			case *dns.NS:
 				rr.Hdr = hrd
 				rr.Ns = v.Content
@@ -158,6 +160,20 @@ NEXT_ZONE:
 	return
 }
 
+func ParseCAA(rr *dns.CAA, line string) bool {
+	splites := strings.Split(line, " ")
+	rr.Tag = splites[1]
+	rr.Value = splites[2]
+
+	if i, err := strconv.Atoi(splites[0]); err != nil {
+		return false
+	} else {
+		rr.Flag = uint8(i)
+	}
+
+	return true
+
+}
 func ParseSOA(rr *dns.SOA, line string) bool {
 	splites := strings.Split(line, " ")
 	if len(splites) < 7 {
