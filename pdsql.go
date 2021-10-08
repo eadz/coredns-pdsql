@@ -88,6 +88,9 @@ func (pdb PowerDNSGenericSQLBackend) ServeDNS(ctx context.Context, w dns.Respons
 			case *dns.TXT:
 				rr.Hdr = hrd
 				rr.Txt = []string{v.Content}
+		        case *dns.CAA:
+				rr.Hdr = hrd
+				rr.CAA = []string{v.Content}
 			case *dns.NS:
 				rr.Hdr = hrd
 				rr.Ns = v.Content
