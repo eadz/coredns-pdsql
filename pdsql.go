@@ -87,7 +87,7 @@ func (pdb PowerDNSGenericSQLBackend) ServeDNS(ctx context.Context, w dns.Respons
 			case *dns.CNAME:
 				rr.Hdr = hrd
 				rr.Target = dns.Fqdn(v.Content)
-				rr.Hdr.Ttl = 3600
+				rr.Hdr.Ttl = 360
 
 			case *dns.AAAA:
 				rr.Hdr = hrd
