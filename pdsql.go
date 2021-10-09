@@ -86,7 +86,7 @@ func (pdb PowerDNSGenericSQLBackend) ServeDNS(ctx context.Context, w dns.Respons
 
 			case *dns.CNAME:
 				rr.Hdr = hrd
-				rr.Target = v.Content
+				rr.Target = dns.Fqdn(v.Content)
 			case *dns.AAAA:
 				rr.Hdr = hrd
 				rr.AAAA = net.ParseIP(v.Content)
@@ -165,6 +165,7 @@ NEXT_ZONE:
 	return
 }
 
+// Parse CAA RECORD
 func ParseCAA(rr *dns.CAA, line string) bool {
 	splites := strings.Split(line, " ")
 	rr.Tag = splites[1]
