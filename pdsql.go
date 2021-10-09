@@ -118,6 +118,7 @@ func (pdb PowerDNSGenericSQLBackend) ServeDNS(ctx context.Context, w dns.Respons
 			if rr == nil {
 				// invalid record
 			} else {
+				rr.Header().Ttl = 360
 				a.Answer = append(a.Answer, rr)
 			}
 		}
