@@ -2,10 +2,11 @@
 package pdsql
 
 import (
-	"github.com/mrfelfel/coredns-pdsql/pdnsmodel"
 	"net"
 	"strconv"
 	"strings"
+
+	"github.com/mrfelfel/coredns-pdsql/pdnsmodel"
 
 	"github.com/coredns/coredns/plugin"
 	"github.com/coredns/coredns/request"
@@ -82,6 +83,10 @@ func (pdb PowerDNSGenericSQLBackend) ServeDNS(ctx context.Context, w dns.Respons
 			case *dns.A:
 				rr.Hdr = hrd
 				rr.A = net.ParseIP(v.Content)
+
+			case *dns.CNAME:
+				rr.Hdr = hrd
+				rr.Target = v.Content
 			case *dns.AAAA:
 				rr.Hdr = hrd
 				rr.AAAA = net.ParseIP(v.Content)
