@@ -66,7 +66,7 @@ func (pdb PowerDNSGenericSQLBackend) ServeDNS(ctx context.Context, w dns.Respons
 		}
 		for _, v := range records {
 			typ := dns.StringToType[v.Type]
-			hrd := dns.RR_Header{Name: state.QName(), Rrtype: typ, Class: state.QClass(), Ttl: 360}
+			hrd := dns.RR_Header{Name: state.QName(), Rrtype: typ, Class: state.QClass(), Ttl: v.Ttl}
 			if !strings.HasSuffix(hrd.Name, ".") {
 				hrd.Name += "."
 			}
@@ -87,8 +87,6 @@ func (pdb PowerDNSGenericSQLBackend) ServeDNS(ctx context.Context, w dns.Respons
 			case *dns.CNAME:
 				rr.Hdr = hrd
 				rr.Target = dns.Fqdn(v.Content)
-				rr.Hdr.Ttl = 360
-
 			case *dns.AAAA:
 				rr.Hdr = hrd
 				rr.AAAA = net.ParseIP(v.Content)
@@ -118,7 +116,6 @@ func (pdb PowerDNSGenericSQLBackend) ServeDNS(ctx context.Context, w dns.Respons
 			if rr == nil {
 				// invalid record
 			} else {
-				rr.Header().Ttl = 360
 				a.Answer = append(a.Answer, rr)
 			}
 		}
