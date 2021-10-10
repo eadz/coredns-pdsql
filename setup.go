@@ -1,8 +1,9 @@
 package pdsql
 
 import (
-	"github.com/mrfelfel/coredns-pdsql/pdnsmodel"
 	"log"
+
+	"github.com/mrfelfel/coredns-pdsql/pdnsmodel"
 
 	"github.com/coredns/caddy"
 	"github.com/coredns/coredns/core/dnsserver"
@@ -48,7 +49,7 @@ func setup(c *caddy.Controller) error {
 				}
 			}
 			backend.Debug = true
-			log.Println(Name, "enable log", args)
+			log.Println(Name, "enable log 0.0.1", args)
 		case "auto-migrate":
 			// currently only use records table
 			if err := backend.AutoMigrate(); err != nil {
