@@ -101,6 +101,7 @@ first.example.test.	3600	IN	A	192.168.1.1
 
 * [x] support wildcard record
 * [x] support new type (like caa)
+* [] cache (memory cache)
 
 ## why fork ? 
 for new todos :))

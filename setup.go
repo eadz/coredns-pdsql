@@ -3,6 +3,7 @@ package pdsql
 import (
 	"log"
 
+	"github.com/dgraph-io/ristretto"
 	"github.com/mrfelfel/coredns-pdsql/pdnsmodel"
 
 	"github.com/coredns/caddy"
@@ -35,7 +36,17 @@ func setup(c *caddy.Controller) error {
 	if err != nil {
 		return err
 	}
+
+	cache, err := ristretto.NewCache(&ristretto.Config{
+		NumCounters: 1e7,     // number of keys to track frequency of (10M).
+		MaxCost:     1 << 30, // maximum cost of cache (1GB).
+		BufferItems: 64,      // number of keys per Get buffer.
+	})
+	if err != nil {
+		return err
+	}
 	backend.DB = db
+	backend.Cache = cache
 
 	for c.NextBlock() {
 		x := c.Val()

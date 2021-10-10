@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/dgraph-io/ristretto"
 	"github.com/mrfelfel/coredns-pdsql/pdnsmodel"
 
 	"github.com/coredns/coredns/plugin"
@@ -19,6 +20,7 @@ const Name = "pdsql"
 
 type PowerDNSGenericSQLBackend struct {
 	*gorm.DB
+	*ristretto.Cache
 	Debug bool
 	Next  plugin.Handler
 }
@@ -31,6 +33,8 @@ func (pdb PowerDNSGenericSQLBackend) ServeDNS(ctx context.Context, w dns.Respons
 	a.SetReply(r)
 	a.Compress = true
 	a.Authoritative = true
+
+	var cacheMiss = true
 
 	var records []*pdnsmodel.Record
 	query := pdnsmodel.Record{Name: state.QName(), Type: state.Type(), Disabled: false}
@@ -47,6 +51,15 @@ func (pdb PowerDNSGenericSQLBackend) ServeDNS(ctx context.Context, w dns.Respons
 	case dns.TypeAAAA:
 		query.Type = ""
 
+	}
+
+	pdb.Cache.Wait()
+
+	value, found := pdb.Cache.Get(query.Name + "_" + query.Type)
+	if found {
+		cacheMiss = false
+
+		records = value.([]*pdnsmodel.Record)
 	}
 
 	if err := pdb.Where(query).Find(&records).Error; err != nil {
@@ -69,6 +82,11 @@ func (pdb PowerDNSGenericSQLBackend) ServeDNS(ctx context.Context, w dns.Respons
 				return dns.RcodeServerFailure, err
 			}
 		}
+
+		if cacheMiss {
+			pdb.Cache.SetWithTTL(query.Name+"_"+query.Type, &records, 20, 3600)
+		}
+
 		for _, v := range records {
 			typ := dns.StringToType[v.Type]
 			hrd := dns.RR_Header{Name: state.QName(), Rrtype: typ, Class: state.QClass(), Ttl: v.Ttl}
