@@ -42,6 +42,8 @@ func (pdb PowerDNSGenericSQLBackend) ServeDNS(ctx context.Context, w dns.Respons
 	switch state.QType() {
 	case dns.TypeANY:
 		query.Type = ""
+	case dns.TypeA:
+		query.Type = ""
 	}
 
 	if err := pdb.Where(query).Find(&records).Error; err != nil {
