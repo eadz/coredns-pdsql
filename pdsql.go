@@ -33,7 +33,7 @@ func (pdb PowerDNSGenericSQLBackend) ServeDNS(ctx context.Context, w dns.Respons
 	a.Authoritative = true
 
 	var records []*pdnsmodel.Record
-	query := pdnsmodel.Record{Name: state.QName(), Type: state.Type(), Disabled: false}
+	query := pdnsmodel.Record{Name: state.QName(), Disabled: false}
 	if query.Name != "." {
 		// remove last dot
 		query.Name = query.Name[:len(query.Name)-1]
