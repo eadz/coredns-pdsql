@@ -9,7 +9,6 @@ import (
 	"github.com/mrfelfel/coredns-pdsql/pdnsmodel"
 
 	"github.com/coredns/coredns/plugin"
-	"github.com/coredns/coredns/plugin/pkg/fall"
 	"github.com/coredns/coredns/request"
 	"github.com/jinzhu/gorm"
 	"github.com/miekg/dns"
@@ -22,7 +21,6 @@ type PowerDNSGenericSQLBackend struct {
 	*gorm.DB
 	Debug bool
 	Next  plugin.Handler
-	Fall  fall.F
 }
 
 func (pdb PowerDNSGenericSQLBackend) Name() string { return Name }
@@ -57,16 +55,13 @@ func (pdb PowerDNSGenericSQLBackend) ServeDNS(ctx context.Context, w dns.Respons
 				}
 			}
 		} else {
-
-			return plugin.NextOrFailure(pdb.Name(), pdb.Next, ctx, w, r)
-
+			return dns.RcodeServerFailure, err
 		}
 	} else {
 		if len(records) == 0 {
 			records, err = pdb.SearchWildcard(state.QName(), state.QType())
 			if err != nil {
-				return plugin.NextOrFailure(pdb.Name(), pdb.Next, ctx, w, r)
-
+				return dns.RcodeServerFailure, err
 			}
 		}
 		for _, v := range records {
@@ -85,14 +80,14 @@ func (pdb PowerDNSGenericSQLBackend) ServeDNS(ctx context.Context, w dns.Respons
 				if !ParseSOA(rr, v.Content) {
 					rr = nil
 				}
-			case *dns.A:
-				rr.Hdr = hrd
-				rr.A = net.ParseIP(v.Content)
-
 			case *dns.CNAME:
 				rr.Hdr = hrd
 
 				rr.Target = dns.Fqdn(v.Content)
+			case *dns.A:
+				rr.Hdr = hrd
+				rr.A = net.ParseIP(v.Content)
+
 			case *dns.AAAA:
 				rr.Hdr = hrd
 				rr.AAAA = net.ParseIP(v.Content)
