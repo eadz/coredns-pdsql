@@ -2,7 +2,6 @@
 package pdsql
 
 import (
-	"log"
 	"net"
 	"strconv"
 	"strings"
@@ -10,6 +9,7 @@ import (
 	"github.com/mrfelfel/coredns-pdsql/pdnsmodel"
 
 	"github.com/coredns/coredns/plugin"
+	"github.com/coredns/coredns/plugin/pkg/fall"
 	"github.com/coredns/coredns/request"
 	"github.com/jinzhu/gorm"
 	"github.com/miekg/dns"
@@ -22,13 +22,13 @@ type PowerDNSGenericSQLBackend struct {
 	*gorm.DB
 	Debug bool
 	Next  plugin.Handler
+	Fall  fall.F
 }
 
 func (pdb PowerDNSGenericSQLBackend) Name() string { return Name }
 func (pdb PowerDNSGenericSQLBackend) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (int, error) {
 	state := request.Request{W: w, Req: r}
 
-	log.Print("hello veritas 0.1.1")
 	a := new(dns.Msg)
 	a.SetReply(r)
 	a.Compress = true
@@ -57,13 +57,16 @@ func (pdb PowerDNSGenericSQLBackend) ServeDNS(ctx context.Context, w dns.Respons
 				}
 			}
 		} else {
-			return dns.RcodeServerFailure, err
+
+			return plugin.NextOrFailure(pdb.Name(), pdb.Next, ctx, w, r)
+
 		}
 	} else {
 		if len(records) == 0 {
 			records, err = pdb.SearchWildcard(state.QName(), state.QType())
 			if err != nil {
-				return dns.RcodeServerFailure, err
+				return plugin.NextOrFailure(pdb.Name(), pdb.Next, ctx, w, r)
+
 			}
 		}
 		for _, v := range records {
@@ -88,6 +91,7 @@ func (pdb PowerDNSGenericSQLBackend) ServeDNS(ctx context.Context, w dns.Respons
 
 			case *dns.CNAME:
 				rr.Hdr = hrd
+
 				rr.Target = dns.Fqdn(v.Content)
 			case *dns.AAAA:
 				rr.Hdr = hrd
