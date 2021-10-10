@@ -49,7 +49,7 @@ func setup(c *caddy.Controller) error {
 				}
 			}
 			backend.Debug = true
-			log.Println(Name, "enable log 0.0.2", args)
+			log.Println(Name, "enable log 0.0.1z", args)
 		case "auto-migrate":
 			// currently only use records table
 			if err := backend.AutoMigrate(); err != nil {
