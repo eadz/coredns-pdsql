@@ -2,6 +2,7 @@
 package pdsql
 
 import (
+	"log"
 	"net"
 	"strconv"
 	"strings"
@@ -27,6 +28,7 @@ func (pdb PowerDNSGenericSQLBackend) Name() string { return Name }
 func (pdb PowerDNSGenericSQLBackend) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (int, error) {
 	state := request.Request{W: w, Req: r}
 
+	log.Print("hello veritas 0.1.1")
 	a := new(dns.Msg)
 	a.SetReply(r)
 	a.Compress = true
