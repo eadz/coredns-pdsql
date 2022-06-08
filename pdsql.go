@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/dgraph-io/ristretto"
-	"github.com/mrfelfel/coredns-pdsql/pdnsmodel"
+	"github.com/eadz/coredns-pdsql/pdnsmodel"
 
 	"github.com/coredns/coredns/plugin"
 	"github.com/coredns/coredns/request"

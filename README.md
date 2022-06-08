@@ -5,8 +5,8 @@ weight: 10
 tags: [  "plugin" , "pdsql" ]
 categories: [ "plugin", "external" ]
 date: "2017-12-09T10:26:00+08:00"
-repo: "https://github.com/mrfelfel/coredns-pdsql"
-home: "https://github.com/mrfelfel/coredns-pdsql/blob/master/README.md"
+repo: "https://github.com/eadz/coredns-pdsql"
+home: "https://github.com/eadz/coredns-pdsql/blob/master/README.md"
 ---
 
 # pdsql
@@ -103,5 +103,5 @@ first.example.test.	3600	IN	A	192.168.1.1
 * [x] support new type (like caa)
 * [] cache (memory cache)
 
-## why fork ? 
+## why fork ?
 for new todos :))

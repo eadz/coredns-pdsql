@@ -1,4 +1,4 @@
-module github.com/mrfelfel/coredns-pdsql
+module github.com/eadz/coredns-pdsql
 
 go 1.13
 
